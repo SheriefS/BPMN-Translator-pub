@@ -1,0 +1,53 @@
+Task Order,Task Name,Task Type,Task Dependency,Task Output,Task Outgoing,Responsible for Action
+1,1 Week Before Period Closure,startEvent,None,,Consolidation Gateway (2),GL Team
+2,Consolidation Gateway,exclusiveGateway,"1 Week Before Period Closure (1), Provide Feed Back (6.1)",,Update the Period Closing Plan (3),GL Team
+3,Update the Period Closing Plan,scriptTask,Consolidation Gateway (2),,Submit the Plan for Approval (4),GL Team
+4,Submit the Plan for Approval,sendTask,Update the Period Closing Plan (3),,Review the Period Closing Plan (5),GL Team
+5,Review the Period Closing Plan,manualTask,Submit the Plan for Approval (4),,"Decision Gateway, Approve (6)",GL Manager
+6,"Decision Gateway, Approve",exclusiveGateway,Review the Period Closing Plan (5),,"Send Approved Plan (7), Provide Feed Back (6.1)",GL Manager
+6.1,Provide Feed Back,sendTask,"Decision Gateway, Approve (6)",,Consolidation Gateway (2),GL Manager
+7,Send Approved Plan,sendTask,"Decision Gateway, Approve (6)",,Communicate the Approved Plan to all Concerned Parties (8),GL Manager
+8,Communicate the Approved Plan to all Concerned Parties,sendTask,Send Approved Plan (7),,Signal Closure Plan (9),GL Team
+9,Signal Closure Plan,intermediateThrowEvent,Communicate the Approved Plan to all Concerned Parties (8),,Consolidation Gateway (10),GL Team
+10,Consolidation Gateway,exclusiveGateway,"Provide Feed Back (16.1), Signal Closure Plan (9), Provide Feedback (14.1)",,Sub Ledger Reconciliation (11),GL Team
+11,Sub Ledger Reconciliation,subProcess,Consolidation Gateway (10),,Subsidiaries Trial Balance Integration (12),GL Manager
+11[1],"Start Sub
+Ledger
+Reconciliation",startEvent,None,,Ensure All Modules Period Transactions Are Posted in GL (11[2]),GL Manager
+11[2],Ensure All Modules Period Transactions Are Posted in GL,manualTask,"Start Sub
+Ledger
+Reconciliation (11[1])",,Consolidation Gateway (11[3]),GL Manager
+11[3],Consolidation Gateway,exclusiveGateway,"Ensure All Modules Period Transactions Are Posted in GL (11[2]), Provide Feedback (11[6.1])",,Post Adjustments Entries if Any (11[4]),GL Manager
+11[4],Post Adjustments Entries if Any,userTask,Consolidation Gateway (11[3]),,Review GL and SL Adjustments and Reconciliation (11[5]),GL Manager
+11[5],Review GL and SL Adjustments and Reconciliation,manualTask,Post Adjustments Entries if Any (11[4]),,"Decision Gateway, Approved (11[6])",GL Manager
+11[6],"Decision Gateway, Approved",exclusiveGateway,Review GL and SL Adjustments and Reconciliation (11[5]),,"Approve Posting (11[7]), Provide Feedback (11[6.1])",GL Manager
+11[6.1],Provide Feedback,sendTask,"Decision Gateway, Approved (11[6])",,Consolidation Gateway (11[3]),GL Manager
+11[7],Approve Posting,userTask,"Decision Gateway, Approved (11[6])",,Close Module (11[8]),GL Manager
+11[8],Close Module,userTask,Approve Posting (11[7]),,End Sub Ledger Reconcilation (11[9]),GL Manager
+11[9],End Sub Ledger Reconcilation,endEvent,Close Module (11[8]),,None,GL Manager
+12,Subsidiaries Trial Balance Integration,subProcess,Sub Ledger Reconciliation (11),,Final Review of Consolidated Reports (13),GL Team
+12[1],"Start The
+Subsidiaries 
+Trial Balance 
+Integration Subprocess",startEvent,None,,Consolidation Gateway (12[2]),GL Team
+12[2],Consolidation Gateway,exclusiveGateway,"Start The
+Subsidiaries 
+Trial Balance 
+Integration Subprocess (12[1]), Update The Missing Mapping (12[4.1])",,Run Integration of Subsidiaries Trial Balance (12[3]),GL Team
+12[3],Run Integration of Subsidiaries Trial Balance,userTask,Consolidation Gateway (12[2]),,"Decision Gateway, Missing Mapping (12[4])",GL Team
+12[4],"Decision Gateway, Missing Mapping",exclusiveGateway,Run Integration of Subsidiaries Trial Balance (12[3]),,"Review Intercompany Transactions (12[5]), Update The Missing Mapping (12[4.1])",GL Team
+12[4.1],Update The Missing Mapping,userTask,"Decision Gateway, Missing Mapping (12[4])",,Consolidation Gateway (12[2]),GL Team
+12[5],Review Intercompany Transactions,userTask,"Decision Gateway, Missing Mapping (12[4])",,Run Consolidation in the System (12[6]),GL Team
+12[6],Run Consolidation in the System,userTask,Review Intercompany Transactions (12[5]),,Generate Stand Alone and Consolidated Reports View (12[7]),GL Team
+12[7],Generate Stand Alone and Consolidated Reports View,task,Run Consolidation in the System (12[6]),,End Subsidiaries Trial Balance Integration (12[8]),GL Team
+12[8],End Subsidiaries Trial Balance Integration,endEvent,Generate Stand Alone and Consolidated Reports View (12[7]),,None,GL Team
+13,Final Review of Consolidated Reports,manualTask,Subsidiaries Trial Balance Integration (12),,Decision Gateway Discrepancy? (14),GL Team
+14,Decision Gateway Discrepancy?,exclusiveGateway,Final Review of Consolidated Reports (13),,"Close Period All Modules (15), Provide Feedback (14.1)",GL Team
+14.1,Provide Feedback,sendTask,Decision Gateway Discrepancy? (14),,Consolidation Gateway (10),GL Team
+15,Close Period All Modules,userTask,Decision Gateway Discrepancy? (14),,"Decision Gateway, Approved (16)",GL Manager
+16,"Decision Gateway, Approved",exclusiveGateway,Close Period All Modules (15),,"Close / Lock Period (17), Provide Feed Back (16.1)",GL Manager
+16.1,Provide Feed Back,sendTask,"Decision Gateway, Approved (16)",,Consolidation Gateway (10),GL Manager
+17,Close / Lock Period,userTask,"Decision Gateway, Approved (16)",,FS-001 Preparation of Financial Reports (18),GL Manager
+18,FS-001 Preparation of Financial Reports,callActivity,Close / Lock Period (17),,MR-001 Preparation of Management Reports (19),Reporting Team
+19,MR-001 Preparation of Management Reports,callActivity,FS-001 Preparation of Financial Reports (18),,End Monthly Closure Process (20),Reporting Team
+20,End Monthly Closure Process,endEvent,MR-001 Preparation of Management Reports (19),,None,Reporting Team

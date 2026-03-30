@@ -1,0 +1,10 @@
+version: '3'
+services:
+  flask_app:
+    image: bpmn-translator
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./generated_csvs:/app/generated_csvs
+      - ./chatgpt_responses:/app/chatgpt_responses
+    command: python Flask_GUI.py
